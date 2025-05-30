@@ -25,8 +25,9 @@ public class Interpreter : Expr.IVisitor<Object>
             case TokenKind.Plus:
                 if (left is double leftNum && right is double rightNum)
                     return leftNum + rightNum;
-                if (left is string leftStr && right is string rightStr)
-                    return leftStr + rightStr;
+                if (left is string || right is string)
+                    return left.ToString() + right.ToString();
+
                 throw new RuntimeError(expr.Operator, "Operands must be two numbers or two strings.");
             case TokenKind.Minus:
                 CheckNumberOperands(expr.Operator, left, right);
