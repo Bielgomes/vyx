@@ -1,0 +1,8 @@
+EXPRESSION -> TERNARY
+TERNARY -> EQUALITY ( "?" EXPRESSION ":" TERNARY )?
+EQUALITY -> COMPARISON ( ( "!=" | "==" COMPARISON ) COMPARISON )*
+COMPARISON -> TERM ( ( ">" | "<" | ">=" | "<=" ) TERM )*
+TERM -> FACTOR ( ( "+" | "-" ) FACTOR )*
+FACTOR -> UNARY ( ( "/" | "*" ) UNARY )*
+UNARY -> ( "!" | "-" ) UNARY | PRIMARY
+PRIMARY -> STRING | NUMBER | "(" EXPRESSION ")"

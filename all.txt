@@ -1,0 +1,16 @@
+! = < > != == <= >=
+
++ - * / ( ) // teste comentário
+
+/*
+*
+* Comentário Multi-line!
+*/
+
+"String Muito Legal!"
+
+100.12
+
+variavel
+
+or null true false let fn
