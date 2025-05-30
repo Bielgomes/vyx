@@ -70,6 +70,7 @@ public class Token(TokenKind kind, object? literal, Position position)
             TokenKind.NotEqual => "!=",
             TokenKind.GreaterThanEqual => ">=",
             TokenKind.LessThanEqual => "<=",
+            TokenKind.Elvis => ":?",
             _ => ""
         };
     }
