@@ -1,5 +1,3 @@
-using System.Data;
-
 namespace Vyx.src;
 
 public class Interpreter(Expr expr) : Expr.IVisitor<Object>
@@ -26,30 +24,30 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
 
                 break;
             case TokenKind.Minus:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left - (double)right;
             case TokenKind.Star:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left * (double)right;
             case TokenKind.Slash:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left / (double)right;
 
-            case TokenKind.Equal:
+            case TokenKind.EqualsEqual:
                 return IsEqual(left, right);
             case TokenKind.NotEqual:
                 return !IsEqual(left, right);
             case TokenKind.GreaterThan:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left > (double)right;
             case TokenKind.GreaterThanEqual:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left >= (double)right;
             case TokenKind.LessThan:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left < (double)right;
             case TokenKind.LessThanEqual:
-                CheckNumberOperands(expr.Operator, left);
+                CheckNumberOperands(expr.Operator, left, right);
                 return (double)left <= (double)right;
 
             case TokenKind.Elvis:
@@ -86,7 +84,7 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
         switch (expr.Operator.Kind)
         {
             case TokenKind.Minus:
-                CheckNumberOperands(expr.Operator, right);
+                CheckNumberOperand(expr.Operator, right);
                 return -(double)right;
             case TokenKind.Not:
                 return !IsTruthy(right);
@@ -116,9 +114,15 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
         return a.Equals(b);
     }
 
-    private static void CheckNumberOperands(Token @operator, Object operand)
+    private static void CheckNumberOperand(Token @operator, Object operand)
     {
         if (operand is double) return;
         throw new RuntimeError(@operator, "Operand must be a number.");
+    }
+
+    private static void CheckNumberOperands(Token @operator, Object left, Object right)
+    {
+        if (left is double && right is double) return;
+        throw new RuntimeError(@operator, "Operands must be numbers.");
     }
 }
