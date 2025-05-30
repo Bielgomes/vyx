@@ -4,7 +4,7 @@
 
 /*
 *
-* Comentário Multi-line!
+* Comentário Multi-linha!
 */
 
 "String Muito Legal!"
@@ -14,3 +14,5 @@
 variavel
 
 or null true false let fn
+
+? :
