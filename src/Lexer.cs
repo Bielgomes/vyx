@@ -22,7 +22,6 @@ public class Lexer(string source)
         while (!IsAtEnd())
         {
             char lexeme = Advance();
-
             switch (lexeme)
             {
                 case ' ':
@@ -89,7 +88,7 @@ public class Lexer(string source)
                     AddToken(TokenKind.Colon);
                     break;
                 case '?':
-                    AddToken(TokenKind.Question);
+                    AddToken(Match(':') ? TokenKind.Elvis : TokenKind.Question);
                     break;
 
                 default:
@@ -158,14 +157,14 @@ public class Lexer(string source)
         return c >= '0' && c <= '9';
     }
 
-    public bool IsAlpha(char c)
+    public static bool IsAlpha(char c)
     {
         return (c >= 'a' && c <= 'z') ||
                (c >= 'A' && c <= 'Z') ||
                c == '_';
     }
 
-    public bool IsAlphaNumeric(char c)
+    public static bool IsAlphaNumeric(char c)
     {
         return IsAlpha(c) || IsDigit(c);
     }

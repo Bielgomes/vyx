@@ -32,6 +32,7 @@ public enum TokenKind
     Rparen,
     Colon,
     Question,
+    Elvis,
 
     EOF
 }
@@ -57,7 +58,6 @@ public class Token(TokenKind kind, object? literal, Position position)
     {
         return Kind switch
         {
-
             TokenKind.Plus => "+",
             TokenKind.Minus => "-",
             TokenKind.Star => "*",

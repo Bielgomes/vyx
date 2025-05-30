@@ -54,7 +54,7 @@ class Vyx
         if (HasError) return;
 
         var interpreter = new Interpreter(ats);
-        Console.WriteLine(interpreter.Interpret());
+        Console.WriteLine(interpreter.Interpret() ?? "null");
     }
 
     internal static void Error(uint line, string message)

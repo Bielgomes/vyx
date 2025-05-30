@@ -52,8 +52,9 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
                 CheckNumberOperands(expr.Operator, left);
                 return (double)left <= (double)right;
 
-            case TokenKind.EqualsEqual:
-                return IsEqual(left, right);
+            case TokenKind.Elvis:
+                if (left == null) return right;
+                return left;
         }
 
         return null!;

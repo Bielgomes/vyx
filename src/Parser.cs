@@ -21,7 +21,22 @@ public class Parser(List<Token> tokens)
 
     public Expr ParseExpression()
     {
+        Expr expr = ParseElvis();
+        return expr;
+    }
+
+    public Expr ParseElvis()
+    {
         Expr expr = ParseTernary();
+
+        if (Match([TokenKind.Elvis]))
+        {
+            Token op = Previous();
+            Expr right = ParseTernary();
+
+            expr = new Expr.Binary(op, expr, right);
+        }
+
         return expr;
     }
 
@@ -29,7 +44,7 @@ public class Parser(List<Token> tokens)
     {
         Expr expr = ParseEquality();
 
-        if (Match([TokenKind.Question]))
+        while (Match([TokenKind.Question]))
         {
             Expr thenExpr = ParseExpression();
             Consume(TokenKind.Colon, "Expected ':' after true expression");
