@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-
 namespace Vyx.src;
 
 public class Interpreter : Expr.IVisitor<Object>
@@ -29,7 +27,6 @@ public class Interpreter : Expr.IVisitor<Object>
                     return leftNum + rightNum;
                 if (left is string leftStr && right is string rightStr)
                     return leftStr + rightStr;
-
                 throw new RuntimeError(expr.Operator, "Operands must be two numbers or two strings.");
             case TokenKind.Minus:
                 CheckNumberOperands(expr.Operator, left, right);
@@ -39,6 +36,7 @@ public class Interpreter : Expr.IVisitor<Object>
                 return (double)left * (double)right;
             case TokenKind.Slash:
                 CheckNumberOperands(expr.Operator, left, right);
+                if ((double)right == 0) throw new RuntimeError(expr.Operator, "Division by zero.");
                 return (double)left / (double)right;
 
             case TokenKind.EqualsEqual:
