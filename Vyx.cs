@@ -4,13 +4,16 @@ namespace Vyx;
 
 class Vyx
 {
-    private static bool HasError = false;
+    private static readonly Interpreter Interpreter = new();
+    static bool HasError = false;
+    static bool HadRuntimeError = false;
 
     public static void Main(string[] args)
     {
         if (args.Length > 1)
             Console.WriteLine("Run: dotnet run [script]");
-        else if (args.Length == 1) {
+        else if (args.Length == 1)
+        {
             if (args[0].Split('.').Last() != "vyx")
                 Console.WriteLine("Error: File must have a .vyx extension.");
             else if (!File.Exists(args[0]))
@@ -27,6 +30,7 @@ class Vyx
         var bytes = File.ReadAllBytes(path);
         Run(System.Text.Encoding.UTF8.GetString(bytes));
         if (HasError) Environment.Exit(0);
+        if (HadRuntimeError) Environment.Exit(1);
     }
 
     private static void Prompt()
@@ -38,6 +42,7 @@ class Vyx
             if (line == "" || line == null) { break; }
             Run(line);
             HasError = false;
+            HadRuntimeError = false;
         }
     }
 
@@ -49,12 +54,11 @@ class Vyx
         if (HasError) return;
 
         var parser = new Parser(tokens);
-        Expr ats = parser.Parse();
+        var expr = parser.Parse();
 
         if (HasError) return;
 
-        var interpreter = new Interpreter(ats);
-        Console.WriteLine(interpreter.Interpret() ?? "null");
+        Interpreter.Interpret(expr);
     }
 
     internal static void Error(uint line, string message)
@@ -74,5 +78,11 @@ class Vyx
             Report(token.Position.Line, $"at end", message);
         else
             Report(token.Position.Line, $"at '{token.Lexeme()}'", message);
+    }
+
+    internal static void RuntimeError(RuntimeError error)
+    {
+        Console.WriteLine($"{error.Token.Position.ToString()} {error.Message}");
+        HadRuntimeError = true;
     }
 }

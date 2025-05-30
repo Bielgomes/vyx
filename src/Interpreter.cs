@@ -1,12 +1,20 @@
+using System.Text.Json.Nodes;
+
 namespace Vyx.src;
 
-public class Interpreter(Expr expr) : Expr.IVisitor<Object>
+public class Interpreter : Expr.IVisitor<Object>
 {
-    private readonly Expr expr = expr;
-
-    public Object Interpret()
+    public void Interpret(Expr expr)
     {
-        return Evaluate(expr);
+        try
+        {
+            Object value = Evaluate(expr);
+            Console.WriteLine(Stringify(value));
+        }
+        catch (RuntimeError error)
+        {
+            Vyx.RuntimeError(error);
+        }
     }
 
     public object VisitBinaryExpr(Expr.Binary expr)
@@ -22,7 +30,7 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
                 if (left is string leftStr && right is string rightStr)
                     return leftStr + rightStr;
 
-                break;
+                throw new RuntimeError(expr.Operator, "Operands must be two numbers or two strings.");
             case TokenKind.Minus:
                 CheckNumberOperands(expr.Operator, left, right);
                 return (double)left - (double)right;
@@ -72,8 +80,8 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
     {
         Object condition = Evaluate(expr.Condition);
 
-        return IsTruthy(condition) 
-            ? Evaluate(expr.ThenBranch) 
+        return IsTruthy(condition)
+            ? Evaluate(expr.ThenBranch)
             : Evaluate(expr.ElseBranch);
     }
 
@@ -91,7 +99,6 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
             default:
                 throw new RuntimeError(expr.Operator, "Unknown unary operator.");
         }
-        ;
     }
 
     private Object Evaluate(Expr expr)
@@ -112,6 +119,19 @@ public class Interpreter(Expr expr) : Expr.IVisitor<Object>
         if (a == null) return false;
 
         return a.Equals(b);
+    }
+
+    private static string Stringify(Object obj)
+    {
+        if (obj == null) return "null";
+        if (obj is double d)
+        {
+            string text = d.ToString();
+            if (text.EndsWith(".0")) text = text.Substring(0, text.Length - 2);
+            return text;
+        }
+
+        return obj.ToString()!;
     }
 
     private static void CheckNumberOperand(Token @operator, Object operand)
