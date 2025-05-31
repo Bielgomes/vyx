@@ -1,5 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
-
 namespace Vyx.src;
 
 public abstract class Stmt
@@ -11,6 +9,7 @@ public abstract class Stmt
         R VisitPrintStmt(Print stmt);
         R VisitLetStmt(Let stmt);
         R VisitIfStmt(If stmt);
+        R VisitWhileStmt(While stmt);
     }
 
     abstract public R Accept<R>(IVisitor<R> visitor);
@@ -66,6 +65,17 @@ public abstract class Stmt
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitIfStmt(this);
+        }
+    }
+
+    public class While(Expr condition, Stmt body) : Stmt
+    {
+        public Expr Condition { get; private set; } = condition;
+        public Stmt Body { get; private set; } = body;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitWhileStmt(this);
         }
     }
 }

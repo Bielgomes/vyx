@@ -19,4 +19,10 @@ if (b == 4 or b <= 3 and b) {
     print("false");
 }
 
+let aux = 0;
+while (aux <= 10) {
+    aux = aux + 1;
+    print(aux);
+}
+
 print("The result of the division between " + a + " and " + b + " is : " + (a / b));

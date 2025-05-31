@@ -21,6 +21,7 @@ public enum TokenKind
     Print,
     If,
     Else,
+    While,
 
     Equal,
     Not,

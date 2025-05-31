@@ -17,7 +17,8 @@ public class Lexer(string source)
         { "false", TokenKind.False },
         { "print", TokenKind.Print },
         { "if", TokenKind.If },
-        { "else", TokenKind.Else }
+        { "else", TokenKind.Else },
+        { "while", TokenKind.While }
     };
 
     public List<Token> Tokenize()

@@ -70,6 +70,7 @@ public class Parser(List<Token> tokens)
     {
         if (Match([TokenKind.If])) return IfStatement();
         if (Match([TokenKind.Print])) return PrintStatement();
+        if (Match([TokenKind.While])) return WhileStatement();
         if (Match([TokenKind.Lbrace])) return BlockStatement();
 
         return ExpressionStatement();
@@ -97,6 +98,16 @@ public class Parser(List<Token> tokens)
         Consume(TokenKind.Rparen, "Expected ')' after expression.");
         Consume(TokenKind.Semicolon, "Expected ';' after print statement.");
         return new Stmt.Print(value);
+    }
+
+    private Stmt WhileStatement()
+    {
+        Consume(TokenKind.Lparen, "Expected '(' after 'print'.");
+        Expr condition = ParseExpression();
+        Consume(TokenKind.Rparen, "Expected ')' after expression.");
+        Stmt body = Statement();
+
+        return new Stmt.While(condition, body);
     }
 
     private Stmt BlockStatement()
