@@ -18,3 +18,5 @@ or null true false let fn
 ? :
 
 ?:
+
+print ;

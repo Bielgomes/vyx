@@ -18,6 +18,7 @@ public enum TokenKind
     Fn,
     True,
     False,
+    Print,
 
     Equal,
     Not,
@@ -31,6 +32,7 @@ public enum TokenKind
     Lparen,
     Rparen,
     Colon,
+    Semicolon,
     Question,
     Elvis,
 

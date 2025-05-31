@@ -14,7 +14,8 @@ public class Lexer(string source)
         { "let", TokenKind.Let },
         { "fn", TokenKind.Fn },
         { "true", TokenKind.True },
-        { "false", TokenKind.False }
+        { "false", TokenKind.False },
+        { "print", TokenKind.Print }
     };
 
     public List<Token> Tokenize()
@@ -86,6 +87,9 @@ public class Lexer(string source)
                     break;
                 case ':':
                     AddToken(TokenKind.Colon);
+                    break;
+                case ';':
+                    AddToken(TokenKind.Semicolon);
                     break;
                 case '?':
                     AddToken(Match(':') ? TokenKind.Elvis : TokenKind.Question);
