@@ -2,17 +2,33 @@ namespace Vyx.src;
 
 public class InterpreterEnvironment
 {
+    private InterpreterEnvironment? Enclosing = null;
     private readonly Dictionary<string, object> Values = [];
 
-    public void Define(string name, object value)
+    public InterpreterEnvironment()
     {
-        Values[name] = value;
+        Enclosing = null;
+    }
+
+    public InterpreterEnvironment(InterpreterEnvironment enclosing)
+    {
+        Enclosing = enclosing;
+    }
+
+    public void Define(Token name, object value)
+    {
+        if (Values.ContainsKey(name.Lexeme()))
+            throw new RuntimeError(name, $"Variable '{name.Lexeme()}' already defined.");
+
+        Values[name.Lexeme()] = value;
     }
 
     public object Get(Token name)
     {
         if (Values.TryGetValue(name.Lexeme(), out var value))
             return value;
+
+        if (Enclosing != null) return Enclosing.Get(name);
 
         throw new RuntimeError(name, $"Undefined variable '{name.Lexeme()}'.");
     }
@@ -22,6 +38,12 @@ public class InterpreterEnvironment
         if (Values.ContainsKey(name.Lexeme()))
         {
             Values[name.Lexeme()] = value;
+            return;
+        }
+
+        if (Enclosing != null)
+        {
+            Enclosing.Assign(name, value);
             return;
         }
 

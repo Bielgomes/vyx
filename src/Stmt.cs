@@ -6,12 +6,24 @@ public abstract class Stmt
 {
     public interface IVisitor<R>
     {
+        R VisitBlockStmt(Block block);
         R VisitExpressionStmt(Expression stmt);
         R VisitPrintStmt(Print stmt);
         R VisitLetStmt(Let stmt);
     }
 
     abstract public R Accept<R>(IVisitor<R> visitor);
+
+
+    public class Block(List<Stmt> statements) : Stmt
+    {
+        public List<Stmt> Statements { get; private set; } = statements;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitBlockStmt(this);
+        }
+    }
 
     public class Expression(Expr expr) : Stmt
     {

@@ -85,6 +85,12 @@ public class Lexer(string source)
                 case ')':
                     AddToken(TokenKind.Rparen);
                     break;
+                case '{':
+                    AddToken(TokenKind.Lbrace);
+                    break;
+                case '}':
+                    AddToken(TokenKind.Rbrace);
+                    break;
                 case ':':
                     AddToken(TokenKind.Colon);
                     break;

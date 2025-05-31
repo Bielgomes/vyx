@@ -2,7 +2,7 @@ namespace Vyx.src;
 
 public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 {
-    private readonly InterpreterEnvironment InterpreterEnvironment = new();
+    private InterpreterEnvironment InterpreterEnvironment = new();
 
     public void Interpret(List<Stmt> statements)
     {
@@ -114,6 +114,12 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         }
     }
 
+    public object VisitBlockStmt(Stmt.Block stmt)
+    {
+        ExecuteBlock(stmt.Statements, new InterpreterEnvironment(InterpreterEnvironment));
+        return null!;
+    }
+
     public object VisitExpressionStmt(Stmt.Expression stmt)
     {
         Evaluate(stmt.Expr);
@@ -133,7 +139,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         if (stmt.Initializer != null)
             value = Evaluate(stmt.Initializer);
 
-        InterpreterEnvironment.Define(stmt.Name.Lexeme(), value);
+        InterpreterEnvironment.Define(stmt.Name, value);
         return null!;
     }
 
@@ -146,6 +152,23 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
     private void Execute(Stmt stmt)
     {
         stmt.Accept(this);
+    }
+
+    private void ExecuteBlock(List<Stmt> statements, InterpreterEnvironment environment)
+    {
+        InterpreterEnvironment previous = this.InterpreterEnvironment;
+
+        try
+        {
+            this.InterpreterEnvironment = environment;
+
+            foreach (Stmt statement in statements)
+                Execute(statement);
+        }
+        finally
+        {
+            this.InterpreterEnvironment = previous;
+        }
     }
 
     private static bool IsTruthy(Object obj)

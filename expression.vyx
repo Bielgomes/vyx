@@ -1,5 +1,15 @@
 let a = 10;
-a = 50;
+print("A in this scope: " + a);
+
+{
+    let a = 30;
+    print("A in this scope: " + a);
+
+    {
+        let a = 50;
+        print("A in this scope: " + a);
+    }
+}
 
 let b = 3;
 

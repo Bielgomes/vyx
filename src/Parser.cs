@@ -48,7 +48,7 @@ public class Parser(List<Token> tokens)
         catch (ParseError)
         {
             Synchronize();
-            return null;
+            return null!;
         }
     }
 
@@ -69,6 +69,8 @@ public class Parser(List<Token> tokens)
     private Stmt Statement()
     {
         if (Match([TokenKind.Print])) return PrintStatement();
+        if (Match([TokenKind.Lbrace])) return BlockStatement();
+
         return ExpressionStatement();
     }
 
@@ -79,6 +81,19 @@ public class Parser(List<Token> tokens)
         Consume(TokenKind.Rparen, "Expected ')' after expression.");
         Consume(TokenKind.Semicolon, "Expected ';' after print statement.");
         return new Stmt.Print(value);
+    }
+
+    private Stmt BlockStatement()
+    {
+        var statements = new List<Stmt>();
+
+        while (!Check(TokenKind.Rbrace) && !IsAtEnd())
+        {
+            statements.Add(Declaration());
+        }
+
+        Consume(TokenKind.Rbrace, "Expected '}' after block.");
+        return new Stmt.Block(statements);
     }
 
     private Stmt ExpressionStatement()
