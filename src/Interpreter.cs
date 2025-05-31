@@ -89,6 +89,30 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
         return expr.Value;
     }
 
+    public object VisitCallExpr(Expr.Call expr)
+    {
+        object callee = Evaluate(expr.Calle);
+
+        var arguments = new List<object>();
+        foreach (Expr argument in expr.arguments)
+        {
+            arguments.Add(Evaluate(argument));
+        }
+
+        if (callee is not IVyxCallable)
+        {
+            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+        }
+
+        IVyxCallable function = (IVyxCallable)callee;
+        if (arguments.Count != function.Arity())
+        {
+            throw new RuntimeError(expr.paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
+        }
+
+        return function.Call(this, arguments);
+    }
+
     public object VisitTernaryExpr(Expr.Ternary expr)
     {
         object condition = Evaluate(expr.Condition);

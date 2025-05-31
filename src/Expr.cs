@@ -5,6 +5,7 @@ public abstract class Expr
     public interface IVisitor<R>
     {
         R VisitLiteralExpr(Literal expr);
+        R VisitCallExpr(Call expr);
         R VisitGroupingExpr(Grouping expr);
         R VisitLogicalExpr(Logical expr);
         R VisitUnaryExpr(Unary expr);
@@ -16,24 +17,6 @@ public abstract class Expr
 
     abstract public R Accept<R>(IVisitor<R> visitor);
 
-    protected static string PrintIndented(Expr expr)
-    {
-        return expr switch
-        {
-            Literal literal => literal.Value?.ToString() ?? "null",
-            Grouping grouping => $"({PrintIndented(grouping.Expression)})",
-            Unary unary => $"({unary.Operator.Lexeme()}{PrintIndented(unary.Right)})",
-            Binary binary => $"({binary.Operator.Lexeme()} {PrintIndented(binary.Left)} {PrintIndented(binary.Right)})",
-            Ternary ternary => $"({PrintIndented(ternary.Condition)} ? {PrintIndented(ternary.ThenBranch)} : {PrintIndented(ternary.ElseBranch)})",
-            _ => "UnknownExpr",
-        };
-    }
-
-    public virtual string Print()
-    {
-        return PrintIndented(this);
-    }
-
     public class Literal(object value) : Expr
     {
         public object Value { get; private set; } = value;
@@ -41,6 +24,18 @@ public abstract class Expr
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitLiteralExpr(this);
+        }
+    }
+
+    public class Call(Expr callee, Token paren, List<Expr> arguments) : Expr
+    {
+        public Expr Calle { get; private set; } = callee;
+        public Token paren { get; private set; } = paren;
+        public List<Expr> arguments { get; private set; } = arguments;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitCallExpr(this);
         }
     }
 

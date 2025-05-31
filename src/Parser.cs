@@ -339,7 +339,44 @@ public class Parser(List<Token> tokens)
             return new Expr.Unary(op, right);
         }
 
-        return ParsePrimary();
+        return ParseCall();
+    }
+
+    private Expr ParseCall()
+    {
+        Expr expr = ParsePrimary();
+
+        while (true)
+        {
+            if (Match([TokenKind.Lparen]))
+            {
+                expr = FinishCall(expr);
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return expr;
+    }
+
+    private Expr FinishCall(Expr callee)
+    {
+        var arguments = new List<Expr>();
+        if (!Check(TokenKind.Rparen)) {
+            do
+            {
+                if (arguments.Count >= 255)
+                {
+                    Error(Peek(), "Can't have more than 255 arguments");
+                }
+                arguments.Add(ParseExpression());
+            } while (Match([TokenKind.Comma]));
+        }
+
+        Token paren = Consume(TokenKind.Rparen, "Expected ')' after arguments.");
+        return new Expr.Call(callee, paren, arguments);
     }
 
     private Expr ParsePrimary()
@@ -355,11 +392,11 @@ public class Parser(List<Token> tokens)
             return new Expr.Variable(Previous());
 
         if (Match([TokenKind.Lparen]))
-            {
-                Expr expression = ParseExpression();
-                Consume(TokenKind.Rparen, "Expected ')' after expression.");
-                return new Expr.Grouping(expression);
-            }
+        {
+            Expr expression = ParseExpression();
+            Consume(TokenKind.Rparen, "Expected ')' after expression.");
+            return new Expr.Grouping(expression);
+        }
 
         throw Error(Peek(), "Expect expression.");
     }

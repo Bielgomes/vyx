@@ -39,6 +39,7 @@ public enum TokenKind
     Rbrace,
     Colon,
     Semicolon,
+    Comma,
     Question,
     Elvis,
 
@@ -85,6 +86,7 @@ public class Token(TokenKind kind, object? literal, Position position)
             TokenKind.Lbrace => "{",
             TokenKind.Rbrace => "}",
             TokenKind.Colon => ":",
+            TokenKind.Comma => ",",
             TokenKind.Semicolon => ";",
             TokenKind.Question => "?",
             TokenKind.Elvis => "?:",

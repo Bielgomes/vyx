@@ -4,6 +4,7 @@ public class Lexer(string source)
 {
     public string Source { get; } = source;
     public List<Token> Tokens { get; } = [];
+    public uint Current { get; private set; } = 0;
     public uint Column { get; private set; } = 0;
     public uint Line { get; private set; } = 1;
     static readonly Dictionary<string, TokenKind> Keywords = new()
@@ -100,6 +101,9 @@ public class Lexer(string source)
                     break;
                 case ';':
                     AddToken(TokenKind.Semicolon);
+                    break;
+                case ',':
+                    AddToken(TokenKind.Comma);
                     break;
                 case '?':
                     AddToken(Match(':') ? TokenKind.Elvis : TokenKind.Question);

@@ -19,5 +19,7 @@ EQUALITY -> COMPARISON ( ( "!=" | "==" COMPARISON ) COMPARISON )*
 COMPARISON -> TERM ( ( ">" | "<" | ">=" | "<=" ) TERM )*
 TERM -> FACTOR ( ( "+" | "-" ) FACTOR )*
 FACTOR -> UNARY ( ( "/" | "*" ) UNARY )*
-UNARY -> ( "!" | "-" ) UNARY | PRIMARY
+UNARY -> ( "!" | "-" ) UNARY | CALL
+CALL -> PRIMARY ( "(" ARGUMENTS? ")" )*
+ARGUMENTS -> EXPRESSION ( "," EXPRESSION )*
 PRIMARY -> "true" | "false" | "null" | NUMBER | STRING | "(" EXPRESSION ")" | IDENTIFIER
