@@ -2,18 +2,31 @@ namespace Vyx.src;
 
 public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 {
+    private readonly InterpreterEnvironment InterpreterEnvironment = new();
+
     public void Interpret(List<Stmt> statements)
     {
         try
         {
             foreach (Stmt statement in statements)
-            {
                 Execute(statement);
-            }  
-        } catch (RuntimeError error)
+        }
+        catch (RuntimeError error)
         {
             Vyx.RuntimeError(error);
         }
+    }
+
+    public object VisitAssignExpr(Expr.Assign expr)
+    {
+        object value = Evaluate(expr.Value);
+        InterpreterEnvironment.Assign(expr.Name, value);
+        return value;
+    }
+
+    public object VisitVariableExpr(Expr.Variable expr)
+    {
+        return InterpreterEnvironment.Get(expr.Name);
     }
 
     public object VisitBinaryExpr(Expr.Binary expr)
@@ -113,6 +126,17 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         Console.WriteLine(Stringify(value));
         return null!;
     }
+
+    public object VisitLetStmt(Stmt.Let stmt)
+    {
+        object value = null!;
+        if (stmt.Initializer != null)
+            value = Evaluate(stmt.Initializer);
+
+        InterpreterEnvironment.Define(stmt.Name.Lexeme(), value);
+        return null!;
+    }
+
 
     private Object Evaluate(Expr expr)
     {

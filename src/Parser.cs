@@ -12,10 +12,58 @@ public class Parser(List<Token> tokens)
         var statements = new List<Stmt>();
         while (!IsAtEnd())
         {
-            statements.Add(Statement());
+            statements.Add(Declaration());
         }
 
         return statements;
+    }
+
+    private void Synchronize()
+    {
+        Advance();
+
+        while (!IsAtEnd())
+        {
+            if (Previous().Kind == TokenKind.Semicolon) return;
+
+            switch (Peek().Kind)
+            {
+                case TokenKind.Let:
+                case TokenKind.Print:
+                case TokenKind.Fn:
+                    return;
+            }
+
+            Advance();
+        }
+    }
+
+    private Stmt Declaration()
+    {
+        try
+        {
+            if (Match([TokenKind.Let])) return LetDeclaration();
+            return Statement();
+        }
+        catch (ParseError)
+        {
+            Synchronize();
+            return null;
+        }
+    }
+
+    private Stmt LetDeclaration()
+    {
+        Token name = Consume(TokenKind.Identifier, "Expected variable name after 'let'.");
+
+        Expr initializer = null!;
+        if (Match([TokenKind.Equal]))
+        {
+            initializer = ParseExpression();
+        }
+
+        Consume(TokenKind.Semicolon, "Expected ';' after variable declaration.");
+        return new Stmt.Let(name, initializer);
     }
 
     private Stmt Statement()
@@ -26,23 +74,42 @@ public class Parser(List<Token> tokens)
 
     private Stmt PrintStatement()
     {
-        Consume(TokenKind.Lparen, "Expected '(' after 'print'");
+        Consume(TokenKind.Lparen, "Expected '(' after 'print'.");
         Expr value = ParseExpression();
-        Consume(TokenKind.Rparen, "Expected ')' after expression");
-        Consume(TokenKind.Semicolon, "Expected ';' after print statement");
+        Consume(TokenKind.Rparen, "Expected ')' after expression.");
+        Consume(TokenKind.Semicolon, "Expected ';' after print statement.");
         return new Stmt.Print(value);
     }
 
     private Stmt ExpressionStatement()
     {
         Expr expr = ParseExpression();
-        Consume(TokenKind.Semicolon, "Expected ';' after expression");
+        Consume(TokenKind.Semicolon, "Expected ';' after expression.");
         return new Stmt.Expression(expr);
     }
 
     private Expr ParseExpression()
     {
+        return Assignment();
+    }
+
+    private Expr Assignment()
+    {
         Expr expr = ParseElvis();
+
+        if (Match([TokenKind.Equal]))
+        {
+            Token equals = Previous();
+            Expr value = Assignment();
+
+            if (expr is Expr.Variable variable)
+            {
+                return new Expr.Assign(variable.Name, value);
+            }
+
+            Error(equals, "Invalid assignment target. Expected variable.");
+        }
+
         return expr;
     }
 
@@ -68,7 +135,7 @@ public class Parser(List<Token> tokens)
         while (Match([TokenKind.Question]))
         {
             Expr thenExpr = ParseExpression();
-            Consume(TokenKind.Colon, "Expected ':' after true expression");
+            Consume(TokenKind.Colon, "Expected ':' after true expression.");
             Expr elseBranch = ParseExpression();
             expr = new Expr.Ternary(expr, thenExpr, elseBranch);
         }
@@ -158,12 +225,15 @@ public class Parser(List<Token> tokens)
         if (Match([TokenKind.Number, TokenKind.StringLiteral]))
             return new Expr.Literal(Previous().Literal!);
 
+        if (Match([TokenKind.Identifier]))
+            return new Expr.Variable(Previous());
+
         if (Match([TokenKind.Lparen]))
-        {
-            Expr expression = ParseExpression();
-            Consume(TokenKind.Rparen, "Expected ')' after expression");
-            return new Expr.Grouping(expression);
-        }
+            {
+                Expr expression = ParseExpression();
+                Consume(TokenKind.Rparen, "Expected ')' after expression.");
+                return new Expr.Grouping(expression);
+            }
 
         throw Error(Peek(), "Expect expression.");
     }

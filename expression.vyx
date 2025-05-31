@@ -1,2 +1,6 @@
-print("Result: " + ((10 + 10) / 2 < 10 == false ? null ?: 1000 : true));
-print("teste");
+let a = 10;
+a = 50;
+
+let b = 3;
+
+print("The result of the division between " + a + " and " + b + " is : " + (a / b));

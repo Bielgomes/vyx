@@ -238,6 +238,6 @@ public class Lexer(string source)
         string text = Source.Substring((int)Start - 1, (int)Length + 1);
         TokenKind? type = Keywords.GetValueOrDefault(text);
         type ??= TokenKind.Identifier;
-        AddToken((TokenKind) type);
+        AddToken((TokenKind) type, type == TokenKind.Identifier ? text : null);
     }
 }

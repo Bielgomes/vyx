@@ -60,20 +60,10 @@ public class Token(TokenKind kind, object? literal, Position position)
     {
         return Kind switch
         {
-            TokenKind.Plus => "+",
-            TokenKind.Minus => "-",
-            TokenKind.Star => "*",
-            TokenKind.Slash => "/",
-            TokenKind.Equal => "=",
-            TokenKind.Not => "!",
-            TokenKind.GreaterThan => ">",
-            TokenKind.LessThan => "<",
-            TokenKind.EqualsEqual => "==",
-            TokenKind.NotEqual => "!=",
-            TokenKind.GreaterThanEqual => ">=",
-            TokenKind.LessThanEqual => "<=",
-            TokenKind.Elvis => ":?",
-            _ => ""
+            TokenKind.Identifier => Literal as string ?? string.Empty,
+            TokenKind.Number => Literal?.ToString() ?? string.Empty,
+            TokenKind.StringLiteral => Literal as string ?? string.Empty,
+            _ => Kind.ToString()
         };
     }
 }
