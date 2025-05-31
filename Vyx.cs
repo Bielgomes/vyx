@@ -54,11 +54,11 @@ class Vyx
         if (HasError) return;
 
         var parser = new Parser(tokens);
-        var expr = parser.Parse();
+        var statements = parser.Parse();
 
         if (HasError) return;
 
-        Interpreter.Interpret(expr);
+        Interpreter.Interpret(statements);
     }
 
     internal static void Error(uint line, string message)

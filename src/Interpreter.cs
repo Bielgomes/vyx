@@ -1,15 +1,16 @@
 namespace Vyx.src;
 
-public class Interpreter : Expr.IVisitor<Object>
+public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 {
-    public void Interpret(Expr expr)
+    public void Interpret(List<Stmt> statements)
     {
         try
         {
-            Object value = Evaluate(expr);
-            Console.WriteLine(Stringify(value));
-        }
-        catch (RuntimeError error)
+            foreach (Stmt statement in statements)
+            {
+                Execute(statement);
+            }  
+        } catch (RuntimeError error)
         {
             Vyx.RuntimeError(error);
         }
@@ -100,9 +101,27 @@ public class Interpreter : Expr.IVisitor<Object>
         }
     }
 
+    public object VisitExpressionStmt(Stmt.Expression stmt)
+    {
+        Evaluate(stmt.Expr);
+        return null!;
+    }
+
+    public object VisitPrintStmt(Stmt.Print stmt)
+    {
+        Object value = Evaluate(stmt.Expr);
+        Console.WriteLine(Stringify(value));
+        return null!;
+    }
+
     private Object Evaluate(Expr expr)
     {
         return expr.Accept(this);
+    }
+
+    private void Execute(Stmt stmt)
+    {
+        stmt.Accept(this);
     }
 
     private static bool IsTruthy(Object obj)

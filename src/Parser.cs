@@ -7,25 +7,46 @@ public class Parser(List<Token> tokens)
 
     private class ParseError : Exception {}
 
-    public Expr Parse()
+    public List<Stmt> Parse()
     {
-        try
+        var statements = new List<Stmt>();
+        while (!IsAtEnd())
         {
-            return ParseExpression();
+            statements.Add(Statement());
         }
-        catch (ParseError)
-        {
-            return null!;
-        }
+
+        return statements;
     }
 
-    public Expr ParseExpression()
+    private Stmt Statement()
+    {
+        if (Match([TokenKind.Print])) return PrintStatement();
+        return ExpressionStatement();
+    }
+
+    private Stmt PrintStatement()
+    {
+        Consume(TokenKind.Lparen, "Expected '(' after 'print'");
+        Expr value = ParseExpression();
+        Consume(TokenKind.Rparen, "Expected ')' after expression");
+        Consume(TokenKind.Semicolon, "Expected ';' after print statement");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt ExpressionStatement()
+    {
+        Expr expr = ParseExpression();
+        Consume(TokenKind.Semicolon, "Expected ';' after expression");
+        return new Stmt.Expression(expr);
+    }
+
+    private Expr ParseExpression()
     {
         Expr expr = ParseElvis();
         return expr;
     }
 
-    public Expr ParseElvis()
+    private Expr ParseElvis()
     {
         Expr expr = ParseTernary();
 
@@ -40,7 +61,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseTernary()
+    private Expr ParseTernary()
     {
         Expr expr = ParseEquality();
 
@@ -55,7 +76,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseEquality()
+    private Expr ParseEquality()
     {
         Expr expr = ParseComparison();
 
@@ -70,7 +91,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseComparison()
+    private Expr ParseComparison()
     {
         Expr expr = ParseTerm();
 
@@ -85,7 +106,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseTerm()
+    private Expr ParseTerm()
     {
         Expr expr = ParseFactor();
 
@@ -100,7 +121,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseFactor()
+    private Expr ParseFactor()
     {
         Expr expr = ParseUnary();
 
@@ -115,7 +136,7 @@ public class Parser(List<Token> tokens)
         return expr;
     }
 
-    public Expr ParseUnary()
+    private Expr ParseUnary()
     {
         if (Match([TokenKind.Not, TokenKind.Minus]))
         {
@@ -128,7 +149,7 @@ public class Parser(List<Token> tokens)
         return ParsePrimary();
     }
 
-    public Expr ParsePrimary()
+    private Expr ParsePrimary()
     {
         if (Match([TokenKind.False])) return new Expr.Literal(false);
         if (Match([TokenKind.True])) return new Expr.Literal(true);

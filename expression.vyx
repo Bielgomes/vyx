@@ -1,1 +1,2 @@
-(10 + 10) / 2 < 10 == false ? null ?: 1000 : true
+print("Result: " + ((10 + 10) / 2 < 10 == false ? null ?: 1000 : true));
+print("teste");
