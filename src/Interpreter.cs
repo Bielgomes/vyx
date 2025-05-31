@@ -1,6 +1,6 @@
 namespace Vyx.src;
 
-public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
+public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
 {
     private InterpreterEnvironment InterpreterEnvironment = new();
 
@@ -31,8 +31,8 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitBinaryExpr(Expr.Binary expr)
     {
-        Object left = Evaluate(expr.Left);
-        Object right = Evaluate(expr.Right);
+        object left = Evaluate(expr.Left);
+        object right = Evaluate(expr.Right);
 
         switch (expr.Operator.Kind)
         {
@@ -91,7 +91,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitTernaryExpr(Expr.Ternary expr)
     {
-        Object condition = Evaluate(expr.Condition);
+        object condition = Evaluate(expr.Condition);
 
         return IsTruthy(condition)
             ? Evaluate(expr.ThenBranch)
@@ -116,7 +116,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitUnaryExpr(Expr.Unary expr)
     {
-        Object right = Evaluate(expr.Right);
+        object right = Evaluate(expr.Right);
 
         switch (expr.Operator.Kind)
         {
@@ -144,7 +144,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
 
     public object VisitPrintStmt(Stmt.Print stmt)
     {
-        Object value = Evaluate(stmt.Expr);
+        object value = Evaluate(stmt.Expr);
         Console.WriteLine(Stringify(value));
         return null!;
     }
@@ -182,7 +182,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null!;
     }
 
-    private Object Evaluate(Expr expr)
+    private object Evaluate(Expr expr)
     {
         return expr.Accept(this);
     }
@@ -209,14 +209,14 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         }
     }
 
-    private static bool IsTruthy(Object obj)
+    private static bool IsTruthy(object obj)
     {
         if (obj == null) return false;
         if (obj is bool v) return v;
         return true;
     }
 
-    private static bool IsEqual(Object a, Object b)
+    private static bool IsEqual(object a, object b)
     {
         if (a == null && b == null) return true;
         if (a == null) return false;
@@ -224,7 +224,7 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return a.Equals(b);
     }
 
-    private static string Stringify(Object obj)
+    private static string Stringify(object obj)
     {
         if (obj == null) return "null";
         if (obj is double d)
@@ -237,15 +237,15 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return obj.ToString()!;
     }
 
-    private static void CheckNumberOperand(Token @operator, Object operand)
+    private static void CheckNumberOperand(Token @operator, object operand)
     {
         if (operand is double) return;
         throw new RuntimeError(@operator, "Operand must be a number.");
     }
 
-    private static void CheckNumberOperands(Token @operator, Object left, Object right)
+    private static void CheckNumberOperands(Token op, object left, object right)
     {
         if (left is double && right is double) return;
-        throw new RuntimeError(@operator, "Operands must be numbers.");
+        throw new RuntimeError(op, "Operands must be numbers.");
     }
 }

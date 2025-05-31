@@ -25,4 +25,8 @@ while (aux <= 10) {
     print(aux);
 }
 
+for (let teste = 0; teste < 10; teste = teste + 1) {
+    print("For loop! " + teste);
+}
+
 print("The result of the division between " + a + " and " + b + " is : " + (a / b));

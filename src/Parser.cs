@@ -68,12 +68,67 @@ public class Parser(List<Token> tokens)
 
     private Stmt Statement()
     {
+        if (Match([TokenKind.For])) return ForStatement();
         if (Match([TokenKind.If])) return IfStatement();
         if (Match([TokenKind.Print])) return PrintStatement();
         if (Match([TokenKind.While])) return WhileStatement();
         if (Match([TokenKind.Lbrace])) return BlockStatement();
 
         return ExpressionStatement();
+    }
+
+    private Stmt ForStatement()
+    {
+        Consume(TokenKind.Lparen, "Expected '(' after 'for'.");
+
+        Stmt initializer;
+        if (Match([TokenKind.Semicolon]))
+        {
+            initializer = null;
+        }
+        else if (Match([TokenKind.Let]))
+        {
+            initializer = LetDeclaration();
+        }
+        else
+        {
+            initializer = ExpressionStatement();
+        }
+
+        Expr condition = null;
+        if (!Check(TokenKind.Semicolon))
+        {
+            condition = ParseExpression();
+        }
+
+        Consume(TokenKind.Semicolon, "Expected ';' after loop condition.");
+
+        Expr increment = null;
+        if (!Check(TokenKind.Rparen))
+        {
+            increment = ParseExpression();
+        }
+        Consume(TokenKind.Rparen, "Expected ')' after for clauses.");
+
+        Stmt body = Statement();
+        if (increment != null)
+        {
+            body = new Stmt.Block(
+                [body, new Stmt.Expression(increment)]
+            );
+        }
+
+        condition ??= new Expr.Literal(true);
+        body = new Stmt.While(condition, body);
+
+        if (initializer != null)
+        {
+            body = new Stmt.Block(
+                [initializer, body]
+            );
+        }
+
+        return body;
     }
 
     private Stmt IfStatement()
@@ -84,7 +139,8 @@ public class Parser(List<Token> tokens)
 
         Stmt thenBranch = Statement();
         Stmt elseBranch = null!;
-        if (Match([TokenKind.Else])) {
+        if (Match([TokenKind.Else]))
+        {
             elseBranch = Statement();
         }
 

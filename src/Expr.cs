@@ -34,9 +34,9 @@ public abstract class Expr
         return PrintIndented(this);
     }
 
-    public class Literal(Object value) : Expr
+    public class Literal(object value) : Expr
     {
-        public Object Value { get; private set; } = value;
+        public object Value { get; private set; } = value;
 
         public override T Accept<T>(IVisitor<T> visitor)
         {
