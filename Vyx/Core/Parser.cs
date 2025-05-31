@@ -1,4 +1,4 @@
-namespace Vyx.src;
+namespace Vyx.Core;
 
 public class Parser(List<Token> tokens)
 {
@@ -84,7 +84,7 @@ public class Parser(List<Token> tokens)
         Stmt initializer;
         if (Match([TokenKind.Semicolon]))
         {
-            initializer = null;
+            initializer = null!;
         }
         else if (Match([TokenKind.Let]))
         {
@@ -95,7 +95,7 @@ public class Parser(List<Token> tokens)
             initializer = ExpressionStatement();
         }
 
-        Expr condition = null;
+        Expr condition = null!;
         if (!Check(TokenKind.Semicolon))
         {
             condition = ParseExpression();
@@ -103,7 +103,7 @@ public class Parser(List<Token> tokens)
 
         Consume(TokenKind.Semicolon, "Expected ';' after loop condition.");
 
-        Expr increment = null;
+        Expr increment = null!;
         if (!Check(TokenKind.Rparen))
         {
             increment = ParseExpression();

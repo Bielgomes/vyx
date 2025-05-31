@@ -1,4 +1,4 @@
-namespace Vyx.src;
+namespace Vyx.Core;
 
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
 {
