@@ -10,6 +10,7 @@ public abstract class Stmt
         R VisitExpressionStmt(Expression stmt);
         R VisitPrintStmt(Print stmt);
         R VisitLetStmt(Let stmt);
+        R VisitIfStmt(If stmt);
     }
 
     abstract public R Accept<R>(IVisitor<R> visitor);
@@ -53,6 +54,18 @@ public abstract class Stmt
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitLetStmt(this);
+        }
+    }
+
+    public class If(Expr conditional, Stmt thenBranch, Stmt elseBranch) : Stmt
+    {
+        public Expr Conditional { get; private set; } = conditional;
+        public Stmt ThenBranch { get; private set; } = thenBranch;
+        public Stmt ElseBranch { get; private set; } = elseBranch;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitIfStmt(this);
         }
     }
 }

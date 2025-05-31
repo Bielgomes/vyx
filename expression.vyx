@@ -13,4 +13,10 @@ print("A in this scope: " + a);
 
 let b = 3;
 
+if (b == 4) {
+    print("true");
+} else {
+    print("false");
+}
+
 print("The result of the division between " + a + " and " + b + " is : " + (a / b));

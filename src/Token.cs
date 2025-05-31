@@ -19,6 +19,8 @@ public enum TokenKind
     True,
     False,
     Print,
+    If,
+    Else,
 
     Equal,
     Not,
@@ -69,16 +71,7 @@ public class Token(TokenKind kind, object? literal, Position position)
             TokenKind.Minus => "-",
             TokenKind.Star => "*",
             TokenKind.Slash => "/",
-            TokenKind.Or => "or",
-            TokenKind.And => "and",
-            TokenKind.Null => "null",
-            TokenKind.Let => "let",
-            TokenKind.Fn => "fn",
-            TokenKind.True => "true",
-            TokenKind.False => "false",
-            TokenKind.Print => "print",
             TokenKind.Equal => "=",
-            TokenKind.Not => "not",
             TokenKind.GreaterThan => ">",
             TokenKind.LessThan => "<",
             TokenKind.EqualsEqual => "==",
@@ -94,7 +87,7 @@ public class Token(TokenKind kind, object? literal, Position position)
             TokenKind.Question => "?",
             TokenKind.Elvis => "?:",
             TokenKind.EOF => "EOF",
-            _ => Kind.ToString()
+            _ => Kind.ToString().ToLower()
         };
     }
 }

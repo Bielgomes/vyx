@@ -143,6 +143,20 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
         return null!;
     }
 
+    public object VisitIfStmt(Stmt.If stmt)
+    {
+        if (IsTruthy(Evaluate(stmt.Conditional)))
+        {
+            Execute(stmt.ThenBranch);
+        }
+        else if (stmt.ElseBranch != null)
+        {
+            Execute(stmt.ElseBranch);
+        }
+
+        return null!;
+    }
+
 
     private Object Evaluate(Expr expr)
     {
