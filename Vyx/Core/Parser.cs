@@ -1,4 +1,4 @@
-namespace Vyx.src;
+namespace Vyx.Core;
 
 public class Parser(List<Token> tokens)
 {

@@ -1,4 +1,4 @@
-﻿using Vyx.src;
+﻿using Vyx.Core;
 
 namespace Vyx;
 
