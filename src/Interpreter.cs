@@ -98,6 +98,22 @@ public class Interpreter : Expr.IVisitor<Object>, Stmt.IVisitor<Object>
             : Evaluate(expr.ElseBranch);
     }
 
+    public object VisitLogicalExpr(Expr.Logical expr)
+    {
+        object left = Evaluate(expr.Left);
+
+        if (expr.Operator.Kind == TokenKind.Or)
+        {
+            if (IsTruthy(left)) return left;
+        }
+        else
+        {
+            if (!IsTruthy(left)) return left;
+        }
+
+        return Evaluate(expr.Right);
+    }
+
     public object VisitUnaryExpr(Expr.Unary expr)
     {
         Object right = Evaluate(expr.Right);

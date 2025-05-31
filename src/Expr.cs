@@ -6,6 +6,7 @@ public abstract class Expr
     {
         R VisitLiteralExpr(Literal expr);
         R VisitGroupingExpr(Grouping expr);
+        R VisitLogicalExpr(Logical expr);
         R VisitUnaryExpr(Unary expr);
         R VisitAssignExpr(Assign expr);
         R VisitBinaryExpr(Binary expr);
@@ -50,6 +51,18 @@ public abstract class Expr
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitGroupingExpr(this);
+        }
+    }
+
+    public class Logical(Expr left, Token op, Expr right) : Expr
+    {
+        public Expr Left { get; private set; } = left;
+        public Token Operator { get; private set; } = op;
+        public Expr Right { get; private set; } = right;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitLogicalExpr(this);
         }
     }
 

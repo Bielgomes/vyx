@@ -161,7 +161,7 @@ public class Parser(List<Token> tokens)
 
     private Expr ParseTernary()
     {
-        Expr expr = ParseEquality();
+        Expr expr = ParseOr();
 
         while (Match([TokenKind.Question]))
         {
@@ -169,6 +169,34 @@ public class Parser(List<Token> tokens)
             Consume(TokenKind.Colon, "Expected ':' after true expression.");
             Expr elseBranch = ParseExpression();
             expr = new Expr.Ternary(expr, thenExpr, elseBranch);
+        }
+
+        return expr;
+    }
+
+    private Expr ParseOr()
+    {
+        Expr expr = ParseAnd();
+
+        if (Match([TokenKind.Or]))
+        {
+            Token op = Previous();
+            Expr right = ParseAnd();
+            expr = new Expr.Logical(expr, op, right);
+        }
+
+        return expr;
+    }
+
+    private Expr ParseAnd()
+    {
+        Expr expr = ParseEquality();
+
+        if (Match([TokenKind.And]))
+        {
+            Token op = Previous();
+            Expr right = ParseAnd();
+            expr = new Expr.Logical(expr, op, right);
         }
 
         return expr;

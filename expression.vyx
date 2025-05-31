@@ -13,7 +13,7 @@ print("A in this scope: " + a);
 
 let b = 3;
 
-if (b == 4) {
+if (b == 4 or b <= 3 and b) {
     print("true");
 } else {
     print("false");
