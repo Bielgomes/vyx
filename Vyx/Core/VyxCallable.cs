@@ -1,7 +1,7 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public interface IVyxCallable
 {
     public int Arity();
-    public object Call(Interpreter interpreter, List<object> arguments);
+    public abstract object Call(Interpreter interpreter, List<object> arguments);
 }

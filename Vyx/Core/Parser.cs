@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public class Parser(List<Token> tokens)
 {
@@ -42,6 +42,7 @@ public class Parser(List<Token> tokens)
     {
         try
         {
+            if (Match([TokenKind.Fn])) return Function("function");
             if (Match([TokenKind.Let])) return LetDeclaration();
             return Statement();
         }
@@ -50,6 +51,32 @@ public class Parser(List<Token> tokens)
             Synchronize();
             return null!;
         }
+    }
+
+    private Stmt.Function Function(string kind)
+    {
+        Token name = Consume(TokenKind.Identifier, $"Expected {kind} name.");
+        Consume(TokenKind.Lparen, "Expected '(' after function");
+        var parameters = new List<Token>();
+
+        if (!Check(TokenKind.Rparen))
+        {
+            do
+            {
+                if (parameters.Count >= 255)
+                {
+                    Error(Peek(), "Can't have more than 255 parameters.");
+                }
+
+                parameters.Add(
+                    Consume(TokenKind.Identifier, "Expected parameter name.")
+                );
+            } while (Match([TokenKind.Comma]));
+        }
+        Consume(TokenKind.Rparen, "Expected ')' after parameters.");
+        Consume(TokenKind.Lbrace, "Expected '{' before " + kind + " body.");
+        var body = BlockStatement();
+        return new Stmt.Function(name, parameters, body.Statements);
     }
 
     private Stmt LetDeclaration()
@@ -166,7 +193,7 @@ public class Parser(List<Token> tokens)
         return new Stmt.While(condition, body);
     }
 
-    private Stmt BlockStatement()
+    private Stmt.Block BlockStatement()
     {
         var statements = new List<Stmt>();
 
@@ -450,7 +477,7 @@ public class Parser(List<Token> tokens)
 
     private static ParseError Error(Token token, string message)
     {
-        Vyx.Error(token, message);
+        Program.Error(token, message);
         return new ParseError();
     }
 }

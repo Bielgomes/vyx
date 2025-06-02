@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public class Lexer(string source)
 {
@@ -115,7 +115,7 @@ public class Lexer(string source)
                     else if (IsAlpha(lexeme))
                         HandleIdentifier();
                     else
-                        Vyx.Error(Line, "Unexpected Character,");
+                        Program.Error(Line, "Unexpected Character,");
                     break;
             }
         }
@@ -201,7 +201,7 @@ public class Lexer(string source)
 
         if (IsAtEnd())
         {
-            Vyx.Error(Line, "Unterminated String");
+            Program.Error(Line, "Unterminated String");
             return;
         }
 

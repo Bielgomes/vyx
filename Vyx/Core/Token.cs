@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public enum TokenKind
 {

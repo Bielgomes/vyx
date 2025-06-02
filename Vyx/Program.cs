@@ -1,8 +1,8 @@
-﻿using Vyx.Core;
+﻿using Vyx.Vyx.Core;
 
-namespace Vyx;
+namespace Vyx.Vyx;
 
-class Vyx
+class Program
 {
     private static readonly Interpreter Interpreter = new();
     static bool HasError = false;

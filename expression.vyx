@@ -1,3 +1,5 @@
+let time1 = clock();
+
 let a = 10;
 print("A in this scope: " + a);
 
@@ -29,4 +31,14 @@ for (let teste = 0; teste < 10; teste = teste + 1) {
     print("For loop! " + teste);
 }
 
+
 print("The result of the division between " + a + " and " + b + " is : " + (a / b));
+
+let time2 = clock();
+print("Elipsed time: " + (time2 - time1));
+
+fn teste() {
+    print("FN!");
+}
+
+print(teste);

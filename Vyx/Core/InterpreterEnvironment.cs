@@ -1,4 +1,5 @@
-namespace Vyx.Core;
+
+namespace Vyx.Vyx.Core;
 
 public class InterpreterEnvironment
 {
@@ -21,6 +22,11 @@ public class InterpreterEnvironment
             throw new RuntimeError(name, $"Variable '{name.Lexeme()}' already defined.");
 
         Values[name.Lexeme()] = value;
+    }
+
+    public void Define(string name, object value)
+    {
+        Values[name] = value;
     }
 
     public object Get(Token name)
@@ -48,5 +54,10 @@ public class InterpreterEnvironment
         }
 
         throw new RuntimeError(name, $"Undefined variable '{name.Lexeme()}'.");
+    }
+
+    internal void Define(Func<string> lexeme, object v)
+    {
+        throw new NotImplementedException();
     }
 }

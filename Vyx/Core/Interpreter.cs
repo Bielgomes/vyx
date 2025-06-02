@@ -1,8 +1,15 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
 {
-    private InterpreterEnvironment InterpreterEnvironment = new();
+    public InterpreterEnvironment Globals = new();
+    private InterpreterEnvironment InterpreterEnvironment;
+
+    public Interpreter()
+    {
+        InterpreterEnvironment = Globals;
+        Globals.Define("clock", new ClockCallable());
+    }
 
     public void Interpret(List<Stmt> statements)
     {
@@ -13,7 +20,7 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
         }
         catch (RuntimeError error)
         {
-            Vyx.RuntimeError(error);
+            Program.RuntimeError(error);
         }
     }
 
@@ -94,20 +101,20 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
         object callee = Evaluate(expr.Calle);
 
         var arguments = new List<object>();
-        foreach (Expr argument in expr.arguments)
+        foreach (Expr argument in expr.Arguments)
         {
             arguments.Add(Evaluate(argument));
         }
 
         if (callee is not IVyxCallable)
         {
-            throw new RuntimeError(expr.paren, "Can only call functions and classes.");
+            throw new RuntimeError(expr.Paren, "Can only call functions and classes.");
         }
 
         IVyxCallable function = (IVyxCallable)callee;
         if (arguments.Count != function.Arity())
         {
-            throw new RuntimeError(expr.paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
+            throw new RuntimeError(expr.Paren, $"Expected {function.Arity()} arguments but got {arguments.Count}.");
         }
 
         return function.Call(this, arguments);
@@ -197,6 +204,13 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
         return null!;
     }
 
+    public object VisitFunctionStmt(Stmt.Function stmt)
+    {
+        var function = new VyxFunction(stmt);
+        InterpreterEnvironment.Define(stmt.Name.Lexeme(), function);
+        return null!;
+    }
+
     public object VisitWhileStmt(Stmt.While stmt)
     {
         while (IsTruthy(Evaluate(stmt.Condition)))
@@ -216,20 +230,20 @@ public class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
         stmt.Accept(this);
     }
 
-    private void ExecuteBlock(List<Stmt> statements, InterpreterEnvironment environment)
+    public void ExecuteBlock(List<Stmt> statements, InterpreterEnvironment environment)
     {
-        InterpreterEnvironment previous = this.InterpreterEnvironment;
+        InterpreterEnvironment previous = InterpreterEnvironment;
 
         try
         {
-            this.InterpreterEnvironment = environment;
+            InterpreterEnvironment = environment;
 
             foreach (Stmt statement in statements)
                 Execute(statement);
         }
         finally
         {
-            this.InterpreterEnvironment = previous;
+            InterpreterEnvironment = previous;
         }
     }
 

@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public abstract class Expr
 {
@@ -30,8 +30,8 @@ public abstract class Expr
     public class Call(Expr callee, Token paren, List<Expr> arguments) : Expr
     {
         public Expr Calle { get; private set; } = callee;
-        public Token paren { get; private set; } = paren;
-        public List<Expr> arguments { get; private set; } = arguments;
+        public Token Paren { get; private set; } = paren;
+        public List<Expr> Arguments { get; private set; } = arguments;
 
         public override R Accept<R>(IVisitor<R> visitor)
         {

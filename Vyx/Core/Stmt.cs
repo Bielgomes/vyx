@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public abstract class Stmt
 {
@@ -8,6 +8,7 @@ public abstract class Stmt
         R VisitExpressionStmt(Expression stmt);
         R VisitPrintStmt(Print stmt);
         R VisitLetStmt(Let stmt);
+        R VisitFunctionStmt(Function stmt);
         R VisitIfStmt(If stmt);
         R VisitWhileStmt(While stmt);
     }
@@ -65,6 +66,18 @@ public abstract class Stmt
         public override R Accept<R>(IVisitor<R> visitor)
         {
             return visitor.VisitIfStmt(this);
+        }
+    }
+
+    public class Function(Token name, List<Token> @params, List<Stmt> body) : Stmt
+    {
+        public Token Name { get; private set; } = name;
+        public List<Token> Params { get; private set; } = @params;
+        public List<Stmt> Body { get; private set; } = body;
+
+        public override R Accept<R>(IVisitor<R> visitor)
+        {
+            return visitor.VisitFunctionStmt(this);
         }
     }
 

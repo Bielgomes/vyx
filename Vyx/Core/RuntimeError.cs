@@ -1,4 +1,4 @@
-namespace Vyx.Core;
+namespace Vyx.Vyx.Core;
 
 public class RuntimeError(Token token, string message) : Exception(message)
 {
